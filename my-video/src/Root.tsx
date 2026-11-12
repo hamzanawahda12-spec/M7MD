@@ -3,6 +3,7 @@ import { HelloWorld } from "./HelloWorld";
 import { Logo } from "./HelloWorld/Logo";
 import { Title } from "./HelloWorld/Title";
 import { Arnavutkoy, FPS, TOTAL_FRAMES } from "./Arnavutkoy";
+import { LuksOfis, TOTAL as LUKS_TOTAL } from "./LuksOfis";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -35,6 +36,14 @@ export const RemotionRoot: React.FC = () => {
           }}
         />
       </Folder>
+      <Composition
+        id="LuksOfis"
+        component={LuksOfis}
+        durationInFrames={LUKS_TOTAL}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
       <Composition
         id="ArnavutkoyIsMerkezi"
         component={Arnavutkoy}
