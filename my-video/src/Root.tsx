@@ -5,6 +5,7 @@ import { Title } from "./HelloWorld/Title";
 import { Arnavutkoy, FPS, TOTAL_FRAMES } from "./Arnavutkoy";
 import { LuksOfis, TOTAL as LUKS_TOTAL } from "./LuksOfis";
 import { Eyup, TOTAL as EYUP_TOTAL } from "./Eyup";
+import { Dukkan, TOTAL as DUKKAN_TOTAL } from "./Dukkan";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -37,6 +38,14 @@ export const RemotionRoot: React.FC = () => {
           }}
         />
       </Folder>
+      <Composition
+        id="Dukkan"
+        component={Dukkan}
+        durationInFrames={DUKKAN_TOTAL}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
       <Composition
         id="EyupSultan"
         component={Eyup}
