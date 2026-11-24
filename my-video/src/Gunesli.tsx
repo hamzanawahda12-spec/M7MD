@@ -47,10 +47,10 @@ const PHONE = "+90 534 878 42 22";
  * [lead before the voice starts, exact voice duration in seconds]
  */
 const LINES = {
-  hook: [0.5, 6.03, "l1"],
+  hook: [0.5, 5.64, "l1"],
   citizen: [0.15, 3.16, "l2"],
   plan: [0.15, 5.88, "l3"],
-  listing: [0.15, 6.61, "l4"],
+  listing: [0.15, 5.72, "l4"],
   build: [0.15, 6.77, "l5"],
   stats: [0.15, 7.55, "l6"],
   life: [0.15, 5.33, "l7"],
@@ -246,11 +246,11 @@ const Hook: React.FC = () => {
         </Rise>
         <Rise at={LD("hook") + 0.2}>
           <div style={{ position: "relative", fontFamily: DISPLAY, fontWeight: 700, fontSize: 168, lineHeight: 1.15 }}>
-            <GoldText>باسن إكسبريس</GoldText>
+            <GoldText>باسن إكسبرس</GoldText>
             <div style={{ position: "absolute", inset: 0, background: `linear-gradient(100deg, transparent ${sweep - 15}%, rgba(255,255,255,0.55) ${sweep}%, transparent ${sweep + 15}%)`, mixBlendMode: "overlay" }} />
           </div>
         </Rise>
-        <Pop at={LD("hook") + 2.2} style={{ marginTop: 20 }}>
+        <Pop at={LD("hook") + 1.95} style={{ marginTop: 20 }}>
           <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 50, color: C.pearl, lineHeight: 1.45 }}>
             من أكثر مناطق إسطنبول
             <br />
@@ -390,7 +390,7 @@ const Listing: React.FC = () => {
   const price = Math.round(425000 * pr(t, L + 0.1, L + 1.8, Easing.out(Easing.cubic)));
   const thumbs = ["i_salon1.jpg", "i_kitchen.jpg", "i_bed.jpg", "i_bath.jpg", "i_salon3.jpg"];
   const active = Math.floor(t / 1.3) % thumbs.length;
-  const projIn = pr(t, L + 2.9, L + 3.5);
+  const projIn = pr(t, L + 3.7, L + 4.2);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Media src={A("walk.mp4")} video dur={7.1} rate={1.3} z={[1.02, 1.08]} />
@@ -431,7 +431,7 @@ const Listing: React.FC = () => {
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
-            {["2+1", "116 م²", "باسن إكسبريس"].map((c, i) => (
+            {["2+1", "116 م²", "باسن إكسبرس"].map((c, i) => (
               <span key={c} dir={i === 0 ? "ltr" : "rtl"} style={{ fontFamily: BODY, fontWeight: 800, fontSize: 30, color: C.pearl, border: "1.5px solid rgba(242,221,176,0.5)", borderRadius: 999, padding: "6px 18px" }}>{c}</span>
             ))}
           </div>
@@ -826,7 +826,7 @@ const End: React.FC = () => {
           </div>
         </Pop>
         <Pop at={1.4} style={{ marginTop: 40 }}>
-          <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 40, color: C.goldLight, direction: "rtl" }}>شقة <bdi dir="ltr">2+1</bdi> · 116 م² · باسن إكسبريس، إسطنبول</div>
+          <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 40, color: C.goldLight, direction: "rtl" }}>شقة <bdi dir="ltr">2+1</bdi> · 116 م² · باسن إكسبرس، إسطنبول</div>
         </Pop>
       </div>
     </AbsoluteFill>
