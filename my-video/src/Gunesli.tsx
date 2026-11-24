@@ -42,22 +42,40 @@ const GLASS: React.CSSProperties = {
 };
 const PHONE = "+90 534 878 42 22";
 
-/** Scene timing (seconds), synced to the Harrison Arabic voiceover */
-const T = {
-  hook: [0, 7.2],
-  citizen: [7.2, 13.4],
-  plan: [13.4, 19.6],
-  listing: [19.6, 26.6],
-  build: [26.6, 36.6],
-  stats: [36.6, 49.6],
-  life: [49.6, 60.9],
-  amen: [60.9, 71.4],
-  map: [71.4, 83.4],
-  invest: [83.4, 90.5],
-  deliver: [90.5, 93.4],
-  end: [93.4, 100],
+/**
+ * Each scene carries its own voice line (Harrison, generated per sentence).
+ * [lead before the voice starts, exact voice duration in seconds]
+ */
+const LINES = {
+  hook: [0.5, 6.03, "l1"],
+  citizen: [0.15, 3.16, "l2"],
+  plan: [0.15, 5.88, "l3"],
+  listing: [0.15, 6.61, "l4"],
+  build: [0.15, 6.77, "l5"],
+  stats: [0.15, 7.55, "l6"],
+  life: [0.15, 5.33, "l7"],
+  amen: [0.15, 5.07, "l8"],
+  map: [0.5, 4.6, "l9"],
+  invest: [0.15, 4.13, "l10"],
+  deliver: [0.15, 4.13, "l11"],
+  end: [0.3, 2.35, "l12"],
 } as const;
-export const TOTAL = s(100);
+type Key = keyof typeof LINES;
+const TAIL = 0.3;
+const T = (() => {
+  const out = {} as Record<Key, [number, number]>;
+  let cur = 0;
+  (Object.keys(LINES) as Key[]).forEach((k) => {
+    const [lead, dur] = LINES[k];
+    const len = lead + dur + (k === "end" ? 3.6 : TAIL);
+    out[k] = [cur, cur + len];
+    cur += len;
+  });
+  return out;
+})();
+/** voice start offset inside each scene */
+const LD = (k: Key) => LINES[k][0];
+export const TOTAL = s(T.end[1]);
 
 const ease = Easing.bezier(0.16, 1, 0.3, 1);
 const inOut = Easing.bezier(0.65, 0, 0.35, 1);
@@ -212,7 +230,7 @@ const Hook: React.FC = () => {
   const sweep = interpolate(t, [1.0, 2.6], [-40, 140], cl);
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={G("v_night.mp4")} video dur={7.2} rate={0.9} z={[1.15, 1.0]} pos="48% 50%" />
+      <Media src={G("v_night.mp4")} video dur={6.9} rate={0.95} z={[1.15, 1.0]} pos="48% 50%" />
       <Shade top={0.7} bot={0.95} mid={0.1} />
       <Dust />
       {/* letterbox */}
@@ -223,20 +241,20 @@ const Hook: React.FC = () => {
         <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 30, letterSpacing: 14, color: C.pearl, opacity: pr(t, 1.6, 2.4), marginTop: 10, direction: "ltr" }}>ISTANBUL · BASIN EKSPRES</div>
       </div>
       <div style={{ position: "absolute", left: 60, right: 60, bottom: 400, ...RTL }}>
-        <Rise at={0.4}>
+        <Rise at={LD("hook")}>
           <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 88, lineHeight: 1.25, color: C.pearl }}>استثمر في</div>
         </Rise>
-        <Rise at={0.6}>
+        <Rise at={LD("hook") + 0.2}>
           <div style={{ position: "relative", fontFamily: DISPLAY, fontWeight: 700, fontSize: 168, lineHeight: 1.15 }}>
             <GoldText>باسن إكسبريس</GoldText>
             <div style={{ position: "absolute", inset: 0, background: `linear-gradient(100deg, transparent ${sweep - 15}%, rgba(255,255,255,0.55) ${sweep}%, transparent ${sweep + 15}%)`, mixBlendMode: "overlay" }} />
           </div>
         </Rise>
-        <Pop at={2.3} style={{ marginTop: 20 }}>
-          <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 46, color: C.pearl, lineHeight: 1.45 }}>
-            إحدى أكثر مناطق إسطنبول حيويةً
+        <Pop at={LD("hook") + 2.2} style={{ marginTop: 20 }}>
+          <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 50, color: C.pearl, lineHeight: 1.45 }}>
+            من أكثر مناطق إسطنبول
             <br />
-            <span style={{ color: C.goldLight }}>للأعمال والاستثمار</span>
+            <span style={{ color: C.goldLight }}>حيويةً للأعمال</span>
           </div>
         </Pop>
       </div>
@@ -248,28 +266,29 @@ const Hook: React.FC = () => {
 const Citizen: React.FC = () => {
   const f = useCurrentFrame();
   const t = f / FPS;
-  const flip = interpolate(t, [2.8, 3.8], [0, 180], { ...cl, easing: inOut });
+  const L = LD("citizen");
+  const flip = interpolate(t, [L + 1.1, L + 1.9], [0, 180], { ...cl, easing: inOut });
   const showBack = flip > 90;
   const glow = 0.5 + 0.5 * Math.sin(t * 4);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Iris p={pr(t, 0, 0.9, inOut)}>
-        <Media src={A("d3_family.mp4")} video dur={6.2} rate={0.5} z={[1.05, 1.15]} filter="brightness(0.55)" />
+        <Media src={A("d3_family.mp4")} video dur={3.6} rate={0.8} z={[1.05, 1.15]} filter="brightness(0.55)" />
       </Iris>
       <Dust n={18} opacity={0.6} />
       <div style={{ position: "absolute", left: 60, right: 60, top: 330, ...RTL }}>
-        <Rise at={0.2}>
-          <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 96, lineHeight: 1.25, color: C.pearl }}>وامتلك فرصة</div>
+        <Rise at={L}>
+          <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 96, lineHeight: 1.25, color: C.pearl }}>مع إمكانية</div>
         </Rise>
-        <Rise at={0.4}>
+        <Rise at={L + 0.3}>
           <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 96, lineHeight: 1.25 }}>
-            <GoldText>استثمارية مميزة</GoldText>
+            <GoldText>الحصول على الجنسية</GoldText>
           </div>
         </Rise>
       </div>
       {/* coin */}
       <div style={{ position: "absolute", left: 240, top: 820, width: 600, height: 600, perspective: 1600 }}>
-        <Pop at={1.4} scale>
+        <Pop at={L + 0.2} scale>
           <div style={{ width: 600, height: 600, position: "relative", transformStyle: "preserve-3d", transform: `rotateY(${flip}deg)` }}>
             {[false, true].map((back) => (
               <div
@@ -303,7 +322,7 @@ const Citizen: React.FC = () => {
         </Pop>
       </div>
       {showBack && (
-        <Pop at={3.8} style={{ position: "absolute", left: 0, right: 0, top: 1480, textAlign: "center" }}>
+        <Pop at={L + 2.0} style={{ position: "absolute", left: 0, right: 0, top: 1480, textAlign: "center" }}>
           <span style={{ fontFamily: BODY, fontWeight: 800, fontSize: 44, color: C.sapphire, background: GOLD, padding: "12px 34px", borderRadius: 999 }}>✓ فرصة الحصول على الجنسية</span>
         </Pop>
       )}
@@ -314,8 +333,9 @@ const Citizen: React.FC = () => {
 /** 3 — 2+1 plan, 116 m² */
 const Plan: React.FC = () => {
   const t = useT();
-  const scan = pr(t, 0.2, 1.8, inOut);
-  const area = Math.round(116 * pr(t, 2.4, 3.8, Easing.out(Easing.cubic)));
+  const L = LD("plan");
+  const scan = pr(t, L, L + 1.5, inOut);
+  const area = Math.round(116 * pr(t, L + 2.4, L + 3.6, Easing.out(Easing.cubic)));
   const labels = [
     { x: 0.2, y: 0.62, txt: "صالة ومطبخ" },
     { x: 0.82, y: 0.48, txt: "غرفة نوم رئيسية" },
@@ -341,19 +361,19 @@ const Plan: React.FC = () => {
         <Img src={A("plan.png")} style={{ width: "100%", height: "100%", clipPath: `inset(0 0 ${(1 - scan) * 100}% 0)` }} />
         <div style={{ position: "absolute", left: 0, right: 0, top: `${scan * 100}%`, height: 6, background: GOLD, boxShadow: `0 0 30px ${C.gold}`, opacity: scan < 1 ? 1 : 0 }} />
         {labels.map((l, i) => (
-          <Pop key={i} at={1.9 + i * 0.18} scale style={{ position: "absolute", left: l.x * W * sc - 110, top: l.y * H * sc - 26, width: 220, textAlign: "center" }}>
+          <Pop key={i} at={L + 1.0 + i * 0.15} scale style={{ position: "absolute", left: l.x * W * sc - 110, top: l.y * H * sc - 26, width: 220, textAlign: "center" }}>
             <span style={{ fontFamily: BODY, fontWeight: 800, fontSize: 28, color: C.pearl, background: "rgba(10,26,51,0.88)", padding: "6px 14px", borderRadius: 10, direction: "rtl" }}>{l.txt}</span>
           </Pop>
         ))}
       </div>
       <div style={{ position: "absolute", left: 60, right: 60, top: 1470, display: "flex", justifyContent: "center", alignItems: "baseline", gap: 20, direction: "rtl" }}>
-        <Pop at={2.3}>
+        <Pop at={L + 2.3}>
           <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 200, lineHeight: 1, color: C.sapphire }}>
             {area}
             <span style={{ fontSize: 90, color: "#8A6A2E" }}> م²</span>
           </div>
         </Pop>
-        <Pop at={2.6}>
+        <Pop at={L + 2.4}>
           <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 40, color: "#8A6A2E" }}>المساحة</div>
         </Pop>
       </div>
@@ -366,13 +386,14 @@ const Listing: React.FC = () => {
   const f = useCurrentFrame();
   const t = f / FPS;
   const card = spring({ frame: f - 4, fps: FPS, config: { damping: 18, stiffness: 110 } });
-  const price = Math.round(425000 * pr(t, 0.4, 2.0, Easing.out(Easing.cubic)));
+  const L = LD("listing");
+  const price = Math.round(425000 * pr(t, L + 0.1, L + 1.8, Easing.out(Easing.cubic)));
   const thumbs = ["i_salon1.jpg", "i_kitchen.jpg", "i_bed.jpg", "i_bath.jpg", "i_salon3.jpg"];
   const active = Math.floor(t / 1.3) % thumbs.length;
-  const projIn = pr(t, 3.3, 4.1);
+  const projIn = pr(t, L + 2.9, L + 3.5);
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={A("walk.mp4")} video dur={7} rate={1.25} z={[1.02, 1.08]} />
+      <Media src={A("walk.mp4")} video dur={7.1} rate={1.3} z={[1.02, 1.08]} />
       <Shade top={0.6} bot={0.2} mid={0} />
       <div style={{ position: "absolute", left: 60, right: 60, top: 300, ...RTL }}>
         <Label at={0.05}>الشقة النموذجية · <bdi dir="ltr">2+1</bdi></Label>
@@ -427,11 +448,12 @@ const Listing: React.FC = () => {
 /** 5 — construction becomes completion (real drone), developer + land area */
 const Build: React.FC = () => {
   const t = useT();
-  const p = pr(t, 0.3, 6.0, Easing.linear);
-  const land = Math.round(88000 * pr(t, 5.3, 7.0, Easing.out(Easing.cubic)));
+  const L = LD("build");
+  const p = pr(t, 0.2, 6.0, Easing.linear);
+  const land = Math.round(88000 * pr(t, L + 3.8, L + 5.2, Easing.out(Easing.cubic)));
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={G("v_transform.mp4")} video dur={10} rate={0.66} z={[1.0, 1.1]} pos="45% 50%" />
+      <Media src={G("v_transform.mp4")} video dur={7.2} rate={0.92} z={[1.0, 1.1]} pos="45% 50%" />
       <Shade top={0.85} bot={0.95} />
       {/* progress UI */}
       <div style={{ position: "absolute", left: 60, right: 60, top: 300, ...GLASS, borderRadius: 22, padding: "18px 24px", direction: "rtl" }}>
@@ -443,22 +465,16 @@ const Build: React.FC = () => {
           <div style={{ width: `${p * 100}%`, height: "100%", background: GOLD, marginRight: 0, marginLeft: "auto" }} />
         </div>
       </div>
-      <div style={{ position: "absolute", left: 60, right: 60, bottom: 400, ...RTL }}>
-        <Rise at={0.2}>
-          <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 84, lineHeight: 1.25, color: C.pearl }}>مشروع سكني وتجاري</div>
+      <div style={{ position: "absolute", left: 40, right: 40, bottom: 330, ...RTL, ...GLASS, borderRadius: 36, padding: "26px 36px 30px", background: "linear-gradient(160deg, rgba(10,26,51,0.9), rgba(7,18,38,0.82))", opacity: pr(t, L - 0.1, L + 0.3) }}>
+        <Rise at={L}>
+          <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 44, color: C.goldLight }}>من تطوير</div>
         </Rise>
-        <Rise at={0.4}>
-          <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 84, lineHeight: 1.25 }}>
-            <GoldText>متكامل</GoldText>
+        <Rise at={L + 0.15}>
+          <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 104, lineHeight: 1.2, direction: "ltr", textAlign: "right" }}>
+            <GoldText>Artaş Holding</GoldText>
           </div>
         </Rise>
-        <Pop at={2.4} style={{ marginTop: 14 }}>
-          <div style={{ display: "inline-flex", alignItems: "center", gap: 14, ...GLASS, borderRadius: 18, padding: "12px 24px" }}>
-            <span style={{ fontFamily: BODY, fontWeight: 700, fontSize: 34, color: C.goldLight }}>من تطوير</span>
-            <span style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 44, color: C.pearl, direction: "ltr" }}>Artaş Holding</span>
-          </div>
-        </Pop>
-        <Pop at={5.2} style={{ marginTop: 26 }}>
+        <Pop at={L + 3.7} style={{ marginTop: 26 }}>
           <div style={{ display: "flex", alignItems: "baseline", gap: 18 }}>
             <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 150, lineHeight: 1, direction: "ltr" }}>
               <GoldText>{land.toLocaleString("en-US")}</GoldText>
@@ -496,41 +512,21 @@ const Stat: React.FC<{ at: number; n: number; label: string; icon: IconName }> =
 };
 
 const Stats: React.FC = () => {
-  const t = useT();
-  const types = ["1+1", "2+1", "3+1", "4+1"];
-  const sel = pr(t, 8.8, 12.0, inOut) * 3;
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={A("maquette.jpg")} dur={13} z={[1.25, 1.05]} pos="50% 72%" filter="brightness(0.62) saturate(1.1)" />
+      <Media src={A("maquette.jpg")} dur={8} z={[1.25, 1.05]} pos="50% 72%" filter="brightness(0.62) saturate(1.1)" />
       <Shade top={0.8} bot={0.9} mid={0.15} />
       <Dust n={16} opacity={0.5} />
       <div style={{ position: "absolute", left: 60, right: 60, top: 300, ...RTL }}>
         <Label at={0.05}>المشروع بالأرقام</Label>
       </div>
       <div style={{ position: "absolute", left: 50, right: 50, top: 420, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 20 }}>
-        <Stat at={0.1} n={11} label="مبنى" icon="building" />
-        <Stat at={2.2} n={1556} label="شقة سكنية" icon="key" />
+        <Stat at={LD("stats")} n={11} label="مبنى" icon="building" />
+        <Stat at={LD("stats") + 1.45} n={1556} label="شقة سكنية" icon="key" />
       </div>
-      <div style={{ position: "absolute", left: 50, right: 50, top: 720 }}>
-        <Stat at={5.8} n={24} label="وحدة تجارية" icon="shop" />
+      <div style={{ position: "absolute", left: 50, right: 50, top: 730 }}>
+        <Stat at={LD("stats") + 4.8} n={24} label="وحدة تجارية" icon="shop" />
       </div>
-      {/* unit type segmented control */}
-      <Pop at={8.6} style={{ position: "absolute", left: 50, right: 50, top: 1030 }}>
-        <div style={{ ...RTL, fontFamily: BODY, fontWeight: 800, fontSize: 38, color: C.goldLight, marginBottom: 16 }}>خيارات متنوعة من</div>
-        <div style={{ position: "relative", display: "flex", direction: "ltr", ...GLASS, borderRadius: 999, padding: 10, background: "rgba(7,18,38,0.75)" }}>
-          <div style={{ position: "absolute", top: 10, bottom: 10, left: 10 + sel * 235, width: 225, borderRadius: 999, background: GOLD, boxShadow: `0 0 30px rgba(216,182,119,0.6)` }} />
-          {types.map((x, i) => (
-            <div key={x} style={{ position: "relative", flex: 1, textAlign: "center", fontFamily: DISPLAY, fontWeight: 700, fontSize: 60, padding: "14px 0", color: Math.abs(sel - i) < 0.5 ? C.sapphire : C.pearl }}>
-              {x}
-            </div>
-          ))}
-        </div>
-        <div style={{ display: "flex", justifyContent: "space-between", direction: "ltr", marginTop: 14, fontFamily: BODY, fontWeight: 700, fontSize: 30, color: C.pearl, opacity: 0.85 }}>
-          <span>1+1</span>
-          <span>→</span>
-          <span>4+1</span>
-        </div>
-      </Pop>
     </AbsoluteFill>
   );
 };
@@ -539,16 +535,16 @@ const Stats: React.FC = () => {
 const CARDS3D = [
   { src: "ex_C5.jpg", at: 0.2, x: -330, y: -300, rz: -6, ry: 22 },
   { src: "ex_c6.jpg", at: 0.5, x: 330, y: -250, rz: 5, ry: -22 },
-  { src: "ex_C4.jpg", at: 8.4, x: -250, y: 620, rz: -4, ry: 14 },
+  { src: "ex_C4.jpg", at: 3.4, x: -250, y: 620, rz: -4, ry: 14 },
 ];
 const Life: React.FC = () => {
   const t = useT();
   const chips: { at: number; txt: string; icon: IconName }[] = [
-    { at: 2.5, txt: "المساحات الخضراء والحدائق", icon: "tree" },
-    { at: 7.4, txt: "البحيرة المركزية", icon: "lake" },
-    { at: 9.8, txt: "مناطق ألعاب الأطفال", icon: "kids" },
+    { at: LD("life"), txt: "حدائق خضراء", icon: "tree" },
+    { at: LD("life") + 1.45, txt: "بحيرة مركزية", icon: "lake" },
+    { at: LD("life") + 3.4, txt: "مناطق ألعاب للأطفال", icon: "kids" },
   ];
-  const cam = interpolate(t, [0, 11.3], [0, -8], cl);
+  const cam = interpolate(t, [0, 5.8], [0, -8], cl);
   return (
     <AbsoluteFill style={{ background: `radial-gradient(circle at 50% 45%, ${C.sapphire2} 0%, ${C.night} 75%)` }}>
       <Dust n={20} opacity={0.6} />
@@ -564,7 +560,7 @@ const Life: React.FC = () => {
           {/* centre hero: lake clip */}
           <Pop at={0.0} scale style={{ position: "absolute", left: 90, top: 640, width: 900, height: 620 }}>
             <div style={{ width: 900, height: 620, borderRadius: 34, overflow: "hidden", border: `3px solid ${C.gold}`, boxShadow: "0 50px 120px rgba(0,0,0,0.6)" }}>
-              <Media src={G("v_lake.mp4")} video dur={11.3} rate={0.55} z={[1.0, 1.08]} />
+              <Media src={G("v_lake.mp4")} video dur={5.8} rate={1.0} z={[1.0, 1.08]} />
             </div>
           </Pop>
           {CARDS3D.map((c) => {
@@ -608,16 +604,15 @@ const Life: React.FC = () => {
 
 /** 8 — amenities: glowing tile grid */
 const AM: { at: number; txt: string; icon: IconName }[] = [
-  { at: 2.1, txt: "مسابح داخلية", icon: "pool" },
-  { at: 3.5, txt: "نادٍ رياضي", icon: "gym" },
-  { at: 5.7, txt: "ساونا وحمام تركي", icon: "sauna" },
-  { at: 8.8, txt: "مناطق مخصصة للعائلات", icon: "family" },
+  { at: 0.15, txt: "مسابح داخلية", icon: "pool" },
+  { at: 0.15 + 1.6, txt: "نادٍ رياضي", icon: "gym" },
+  { at: 0.15 + 2.95, txt: "ساونا وحمام تركي", icon: "sauna" },
 ];
 const Amen: React.FC = () => {
   const t = useT();
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={A("d3_garden.mp4")} video dur={10.5} rate={0.3} z={[1.1, 1.2]} filter="brightness(0.35) blur(8px)" />
+      <Media src={A("d3_garden.mp4")} video dur={5.5} rate={0.55} z={[1.1, 1.2]} filter="brightness(0.35) blur(8px)" />
       <div style={{ position: "absolute", left: 60, right: 60, top: 300, ...RTL }}>
         <Rise at={0.05}>
           <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 96, color: C.pearl, lineHeight: 1.2 }}>
@@ -626,13 +621,14 @@ const Amen: React.FC = () => {
         </Rise>
       </div>
       <div style={{ position: "absolute", left: 50, right: 50, top: 560, display: "grid", gridTemplateColumns: "1fr 1fr", gap: 22 }}>
-        {AM.map((a) => {
-          const on = pr(t, a.at, a.at + 0.5);
+        {AM.map((a, idx) => {
+          const on = pr(t, a.at, a.at + 0.4);
           return (
             <div
               key={a.txt}
               style={{
                 height: 430,
+                gridColumn: idx === 2 ? "1 / 3" : undefined,
                 borderRadius: 34,
                 padding: 30,
                 ...GLASS,
@@ -663,19 +659,19 @@ const MapScene: React.FC = () => {
   const t = useT();
   const MW = 4400, MH = 2200;
   const pin = { x: 0.336, y: 0.335 };
-  const z = interpolate(t, [0, 2.2, 11.9], [0.55, 1.0, 1.08], { ...cl, easing: inOut });
+  const z = interpolate(t, [0, 1.0, 5.4], [0.55, 1.0, 1.08], { ...cl, easing: inOut });
   const w = 1080 * 2.2 * z;
   const h = w * (MH / MW);
-  const cx = interpolate(t, [0, 2.2], [0.5, pin.x], { ...cl, easing: inOut });
-  const cy = interpolate(t, [0, 2.2], [0.5, pin.y + 0.1], { ...cl, easing: inOut });
+  const cx = interpolate(t, [0, 1.0], [0.5, pin.x], { ...cl, easing: inOut });
+  const cy = interpolate(t, [0, 1.0], [0.5, pin.y + 0.1], { ...cl, easing: inOut });
   const left = 540 - cx * w;
   const top = 960 - cy * h;
   const pulse = (t * 0.8) % 1;
   const marks: { at: number; x: number; y: number; txt: string; icon: IconName; c: string }[] = [
-    { at: 3.9, x: 0.355, y: 0.29, txt: "مترو", icon: "metro", c: "#1E63C6" },
-    { at: 5.0, x: 0.51, y: 0.73, txt: "مرمراي", icon: "train", c: "#7A3DB8" },
-    { at: 7.9, x: 0.355, y: 0.77, txt: "E-5", icon: "road", c: "#2D8BD8" },
-    { at: 9.6, x: 0.47, y: 0.085, txt: "TEM", icon: "road", c: "#2FA84F" },
+    { at: LD("map") + 0.55, x: 0.355, y: 0.29, txt: "مترو", icon: "metro", c: "#1E63C6" },
+    { at: LD("map") + 1.45, x: 0.51, y: 0.73, txt: "مرمراي", icon: "train", c: "#7A3DB8" },
+    { at: LD("map") + 2.85, x: 0.355, y: 0.77, txt: "E-5", icon: "road", c: "#2D8BD8" },
+    { at: LD("map") + 3.95, x: 0.47, y: 0.085, txt: "TEM", icon: "road", c: "#2FA84F" },
   ];
   return (
     <AbsoluteFill style={{ background: C.pearl }}>
@@ -691,7 +687,7 @@ const MapScene: React.FC = () => {
           })}
         </svg>
         <div style={{ position: "absolute", left: pin.x * w - 230, top: pin.y * h - 330, width: 460 }}>
-          <Pop at={1.8} scale>
+          <Pop at={0.6} scale>
             <div style={{ background: C.sapphire, borderRadius: 30, padding: "20px 24px", textAlign: "center", boxShadow: "0 30px 60px rgba(10,26,51,0.45)", border: `3px solid ${C.gold}` }}>
               <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 52, color: C.goldLight, lineHeight: 1.2 }}>مشروعنا</div>
               <div style={{ fontFamily: BODY, fontWeight: 700, fontSize: 28, color: C.pearl, direction: "ltr" }}>Avrupa Konutları Güneşli</div>
@@ -725,11 +721,12 @@ const MapScene: React.FC = () => {
 /** 10 — investment value */
 const Invest: React.FC = () => {
   const t = useT();
-  const line = pr(t, 0.4, 3.2, Easing.inOut(Easing.cubic));
+  const line = pr(t, 0.2, 2.6, Easing.inOut(Easing.cubic));
   const L = 1600;
+  const V = LD("invest");
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={A("dr_aerial.mp4")} video dur={7.1} rate={1.0} z={[1.05, 1.15]} filter="brightness(0.55)" />
+      <Media src={A("dr_aerial.mp4")} video dur={4.6} rate={1.2} z={[1.05, 1.15]} filter="brightness(0.55)" />
       <Shade top={0.8} bot={0.92} mid={0.15} />
       <svg width={1080} height={1920} style={{ position: "absolute", inset: 0 }}>
         <defs>
@@ -753,8 +750,8 @@ const Invest: React.FC = () => {
       </div>
       <div style={{ position: "absolute", left: 50, right: 50, top: 1300, display: "flex", flexDirection: "column", gap: 20 }}>
         {[
-          { at: 2.2, txt: "طلب إيجاري", icon: "key" as IconName },
-          { at: 5.2, txt: "إمكانات واعدة لإعادة البيع", icon: "trend" as IconName },
+          { at: V, txt: "طلب إيجاري", icon: "key" as IconName },
+          { at: V + 1.4, txt: "إمكانات واعدة لإعادة البيع", icon: "trend" as IconName },
         ].map((k) => (
           <Pop key={k.txt} at={k.at}>
             <div style={{ display: "flex", alignItems: "center", gap: 20, ...GLASS, borderRadius: 26, padding: "20px 28px", direction: "rtl", background: "rgba(10,26,51,0.82)" }}>
@@ -773,10 +770,10 @@ const Invest: React.FC = () => {
 const Deliver: React.FC = () => {
   const f = useCurrentFrame();
   const t = f / FPS;
-  const flip = interpolate(t, [0.3, 1.1], [-90, 0], { ...cl, easing: Easing.out(Easing.back(1.6)) });
+  const flip = interpolate(t, [LD("deliver") + 1.3, LD("deliver") + 2.0], [-90, 0], { ...cl, easing: Easing.out(Easing.back(1.6)) });
   return (
     <AbsoluteFill style={{ background: C.night }}>
-      <Media src={A("dr_cranes.mp4")} video dur={2.9} rate={1.2} z={[1.05, 1.12]} filter="brightness(0.5)" />
+      <Media src={A("dr_cranes.mp4")} video dur={4.6} rate={1.0} z={[1.05, 1.12]} filter="brightness(0.5)" />
       <Shade top={0.7} bot={0.85} mid={0.2} />
       <div style={{ position: "absolute", left: 60, right: 60, top: 330, ...RTL }}>
         <Label at={0.05}>موعد التسليم المتوقع</Label>
@@ -815,7 +812,7 @@ const End: React.FC = () => {
         </div>
       </div>
       <div style={{ position: "absolute", left: 60, right: 60, top: 1180, textAlign: "center" }}>
-        <Pop at={0.6}>
+        <Pop at={LD("end")}>
           <div style={{ fontFamily: DISPLAY, fontWeight: 700, fontSize: 76, color: C.pearl, direction: "rtl" }}>
             تواصل <GoldText>الآن</GoldText>
           </div>
@@ -922,7 +919,7 @@ const Progress: React.FC = () => {
 
 /* ============================================================ composition */
 export const Gunesli: React.FC = () => {
-  const music = (f: number) => interpolate(f, [0, 20, s(95.7), s(96.3), TOTAL - 45, TOTAL], [0, 0.17, 0.17, 0.42, 0.42, 0], cl);
+  const music = (f: number) => interpolate(f, [0, 20, s(T.end[0] + 2.6), s(T.end[0] + 3.1), TOTAL - 45, TOTAL], [0, 0.17, 0.17, 0.42, 0.42, 0], cl);
   return (
     <AbsoluteFill style={{ background: C.night }}>
       <Scene r={T.hook}><Hook /></Scene>
@@ -944,7 +941,11 @@ export const Gunesli: React.FC = () => {
       <SectionIndex />
       <Progress />
 
-      <Audio src={G("vo.mp3")} />
+      {(Object.keys(LINES) as Key[]).map((k) => (
+        <Sequence key={k} from={s(T[k][0] + LINES[k][0])} durationInFrames={s(LINES[k][1] + 0.4)}>
+          <Audio src={G(`vo/${LINES[k][2]}.mp3`)} />
+        </Sequence>
+      ))}
       <Audio src={G("music.mp3")} volume={music} />
     </AbsoluteFill>
   );
