@@ -246,7 +246,7 @@ const Hook: React.FC = () => {
         </Rise>
         <Rise at={LD("hook") + 0.2}>
           <div style={{ position: "relative", fontFamily: DISPLAY, fontWeight: 700, fontSize: 168, lineHeight: 1.15 }}>
-            <GoldText>باسن إكسبرس</GoldText>
+            <GoldText>باسن إكسبريس</GoldText>
             <div style={{ position: "absolute", inset: 0, background: `linear-gradient(100deg, transparent ${sweep - 15}%, rgba(255,255,255,0.55) ${sweep}%, transparent ${sweep + 15}%)`, mixBlendMode: "overlay" }} />
           </div>
         </Rise>
@@ -431,7 +431,7 @@ const Listing: React.FC = () => {
             </div>
           </div>
           <div style={{ display: "flex", flexDirection: "column", gap: 10, alignItems: "flex-start" }}>
-            {["2+1", "116 م²", "باسن إكسبرس"].map((c, i) => (
+            {["2+1", "116 م²", "باسن إكسبريس"].map((c, i) => (
               <span key={c} dir={i === 0 ? "ltr" : "rtl"} style={{ fontFamily: BODY, fontWeight: 800, fontSize: 30, color: C.pearl, border: "1.5px solid rgba(242,221,176,0.5)", borderRadius: 999, padding: "6px 18px" }}>{c}</span>
             ))}
           </div>
@@ -826,7 +826,7 @@ const End: React.FC = () => {
           </div>
         </Pop>
         <Pop at={1.4} style={{ marginTop: 40 }}>
-          <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 40, color: C.goldLight, direction: "rtl" }}>شقة <bdi dir="ltr">2+1</bdi> · 116 م² · باسن إكسبرس، إسطنبول</div>
+          <div style={{ fontFamily: BODY, fontWeight: 800, fontSize: 40, color: C.goldLight, direction: "rtl" }}>شقة <bdi dir="ltr">2+1</bdi> · 116 م² · باسن إكسبريس، إسطنبول</div>
         </Pop>
       </div>
     </AbsoluteFill>
