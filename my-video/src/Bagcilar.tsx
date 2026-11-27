@@ -381,7 +381,7 @@ const Price: React.FC = () => {
   const v = Math.round(480000 * pr(t, L, L + 1.8, Easing.out(Easing.cubic)));
   return (
     <AbsoluteFill style={{ background: C.char }}>
-      <Media src={G("v_living.mp4")} video dur={3.6} rate={1.2} z={[1.05, 1.15]} filter="brightness(0.5)" />
+      <Media src={G("v_living.mp4")} video dur={3.6} rate={0.7} z={[1.05, 1.15]} filter="brightness(0.5)" />
       <AbsoluteFill style={{ alignItems: "center", justifyContent: "center", perspective: 1400 }}>
         <div style={{ transform: `rotateX(${Math.sin(t * 2) * 6}deg) rotateY(${Math.cos(t * 1.6) * 8}deg)`, textAlign: "center" }}>
           <Pop at={L - 0.1}>
