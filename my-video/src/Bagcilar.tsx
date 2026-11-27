@@ -41,7 +41,7 @@ const RTL: React.CSSProperties = { direction: "rtl", textAlign: "right" };
  * [lead, exact line duration]
  */
 const LINES = {
-  hook: [0.35, 5.49, "l1"],
+  hook: [0.35, 5.56, "l1"],
   citizen: [0.3, 3.16, "l2"],
   apt: [0.3, 5.88, "l3"],
   price: [0.3, 3.16, "l4"],
