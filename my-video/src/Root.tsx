@@ -7,6 +7,7 @@ import { LuksOfis, TOTAL as LUKS_TOTAL } from "./LuksOfis";
 import { Eyup, TOTAL as EYUP_TOTAL } from "./Eyup";
 import { Dukkan, TOTAL as DUKKAN_TOTAL } from "./Dukkan";
 import { Gunesli, TOTAL as GUNESLI_TOTAL } from "./Gunesli";
+import { Bagcilar, TOTAL as BAGCILAR_TOTAL } from "./Bagcilar";
 
 // Each <Composition> is an entry in the sidebar!
 
@@ -39,6 +40,14 @@ export const RemotionRoot: React.FC = () => {
           }}
         />
       </Folder>
+      <Composition
+        id="Bagcilar"
+        component={Bagcilar}
+        durationInFrames={BAGCILAR_TOTAL}
+        fps={FPS}
+        width={1080}
+        height={1920}
+      />
       <Composition
         id="Gunesli"
         component={Gunesli}
